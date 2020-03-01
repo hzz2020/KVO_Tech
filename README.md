@@ -5,11 +5,13 @@
 分析以上结果 我们通过抓取 object_A 在被 observer_M, observer_N 观察前和观察后的 
 类的类型(object_getClass)，属性列表(Properties)，变量列表(Ivars)，方法列表(Methods)，得出：
 
-被观察后 动态的新建了一个 NSKVONotifying_KVOObject_A 类 这个类是 KVOObject_A类型的子类； 此时改变isa的指向，使它指向 NSKVONotifying_KVOObject_A
-1、class: 被观察前，object_A 为 KVOObject_A 类型， 被观察后，变为了 NSKVONotifying_KVOObject_A 类型。
+1、class: 被观察前，object_A 为 KVOObject_A 类型， 被观察后，变为了 NSKVONotifying_KVOObject_A 类型。说明被观察后 动态的新建了一个 NSKVONotifying_KVOObject_A 类 这个类是 KVOObject_A类型的子类； 此时改变isa的指向，使它指向 NSKVONotifying_KVOObject_A。
 (通过isa指向改变，事实上，object_getClass(object_A) 和 object_A->isa方法等价)。
+
 2、属性，实例变量：NSKVONotifying_KVOObject_A 没有属性和实例变量。 
+
 3、方法列表：NSKVONotifying_KVOObject_A 有4个方法（①setValue:,②class, ③dealloc, ④_isKVOA）
+
 我们可以注意到，
 ①被观察的值setValue:方法的实现由 ([KVOObject_A setValue:] at KVOObject_A.m)变为了(Foundation_NSSetUnsignedLongLongValueAndNotify)。这个被重写的setter方法在原有的实现变成了[self willChangeValueForKey:@“name”]; 调用存取方法之前总调[super setValue:newName forKey:@”name”]; [self didChangeValueForKey:@”name”]; 等，以触发观察者的响应。 
 
